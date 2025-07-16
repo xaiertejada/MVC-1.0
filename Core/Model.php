@@ -2,29 +2,34 @@
 
 namespace Core;
 
-use App\Config\Config;
 use PDO;
+use App\Config;
 
-class Model
+/**
+ * Base model
+ *
+ * PHP version 7.0
+ */
+abstract class Model
 {
-    public $db = null;
 
-    public function __construct()
+    /**
+     * Get the PDO database connection
+     *
+     * @return mixed
+     */
+    protected static function getDB()
     {
-        try {
-            self::openDatabaseConnection();
-        } catch (\PDOException $e) {
-            exit('Database connection could not be established.');
+        static $db = null;
+
+        if ($db === null) {
+            $dsn = 'mysql:host=' . Config::DB_HOST . ';dbname=' . Config::DB_NAME . ';charset=utf8';
+            $db = new PDO($dsn, Config::DB_USER, Config::DB_PASSWORD);
+
+            // Throw an Exception when an error occurs
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-    }
 
-    private function openDatabaseConnection()
-    {
-        $dsn = sprintf("mysql:host=%s:%s;dbname=%s;charset=%s", Config::DB_HOST, Config::DB_PORT, Config::DB_NAME, Config::DB_CHARSET);
-        $options  = [
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, 
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING
-        ];
-        $this->db = new PDO($dsn, Config::DB_USER, Config::DB_PASS, $options);
+        return $db;
     }
 }

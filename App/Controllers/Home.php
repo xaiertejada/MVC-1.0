@@ -2,31 +2,23 @@
 
 namespace App\Controllers;
 
-use Core\View;
+use \Core\View;
 
-class Home
+/**
+ * Home controller
+ *
+ * PHP version 7.0
+ */
+class Home extends \Core\Controller
 {
-    public function index()
-    {
-        $views = ['home/index'];
-        $args  = ['title' => 'Home'];
-        View::render($views, $args);
-    }
 
-    public function example()
+    /**
+     * Show the index page
+     *
+     * @return void
+     */
+    public function indexAction()
     {
-        $views = ['home/example'];
-        $args  = ['title' => 'Home | Example'];
-        View::render($views, $args);
-    }
-
-    public function exampleWithArgs($id = null)
-    {
-        $views = ['home/example_with_args'];
-        $args  = [
-            'title' => 'Home | Example',
-            'id' => $id ?? 'No se envio ID'
-        ];
-        View::render($views, $args);
+        View::renderTemplate('Home/index.html');
     }
 }

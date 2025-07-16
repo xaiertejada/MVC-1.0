@@ -1,13 +1,32 @@
 <?php
 
-define('ROOT', dirname(__DIR__).DIRECTORY_SEPARATOR);
-define('APP', ROOT.'App'.DIRECTORY_SEPARATOR);
-define('VIEWS', APP.'Views'.DIRECTORY_SEPARATOR);
-define('PUBLIC_FOLDER', 'public');
-define('PUBLIC_FOLDER_PATH', ROOT.PUBLIC_FOLDER.DIRECTORY_SEPARATOR);
+/**
+ * Front controller
+ *
+ * PHP version 7.0
+ */
 
-require ROOT.'vendor/autoload.php';
+/**
+ * Composer
+ */
+require dirname(__DIR__) . '/vendor/autoload.php';
 
-use Core\Router;
 
-$router = new Router();
+/**
+ * Error and Exception handling
+ */
+error_reporting(E_ALL);
+set_error_handler('Core\Error::errorHandler');
+set_exception_handler('Core\Error::exceptionHandler');
+
+
+/**
+ * Routing
+ */
+$router = new Core\Router();
+
+// Add the routes
+$router->add('', ['controller' => 'Home', 'action' => 'index']);
+$router->add('{controller}/{action}');
+    
+$router->dispatch($_SERVER['QUERY_STRING']);

@@ -2,47 +2,52 @@
 
 namespace Core;
 
-use Exception;
-
+/**
+ * View
+ *
+ * PHP version 7.0
+ */
 class View
 {
-    public static function render($views = [], $args = [], $header = 'templates/header', $footer = 'templates/footer')
+
+    /**
+     * Render a view file
+     *
+     * @param string $view  The view file
+     * @param array $args  Associative array of data to display in the view (optional)
+     *
+     * @return void
+     */
+    public static function render($view, $args = [])
     {
-        $baseUrl = Util::baseUrl();
         extract($args, EXTR_SKIP);
 
-        $file = VIEWS."$header.php";
+        $file = dirname(__DIR__) . "/App/Views/$view";  // relative to Core directory
+
         if (is_readable($file)) {
             require $file;
         } else {
-            throw new Exception("$file not found");
+            throw new \Exception("$file not found");
         }
-
-        foreach ($views as $view) {
-            $file = VIEWS."$view.php";
-
-            if (is_readable($file)) {
-                require $file;
-            } else {
-                throw new Exception("$file not found");
-            }
-        }
-
-        $file = VIEWS."$footer.php";
-        if (is_readable($file)) {
-            require $file;
-        } else {
-            throw new Exception("$file not found");
-        }
-        exit;
     }
 
-    public static function renderJson($data, $code = 200, $charset = 'utf-8')
+    /**
+     * Render a view template using Twig
+     *
+     * @param string $template  The template file
+     * @param array $args  Associative array of data to display in the view (optional)
+     *
+     * @return void
+     */
+    public static function renderTemplate($template, $args = [])
     {
-        $response = json_encode($data);
-        http_response_code($code);
-        header("Content-type: application/json; charset=".$charset);
-        echo $response;
-        exit;
+        static $twig = null;
+
+        if ($twig === null) {
+            $loader = new \Twig\Loader\FilesystemLoader(dirname(__DIR__) . '/App/Views');
+            $twig = new \Twig\Environment($loader);
+        }
+
+        echo $twig->render($template, $args);
     }
 }
